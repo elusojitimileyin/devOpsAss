@@ -3,7 +3,9 @@ package semicolon.africa.devOpsAss.service;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import semicolon.africa.devOpsAss.dtos.requset.LoginUserRequest;
 import semicolon.africa.devOpsAss.dtos.requset.RegisterUserRequest;
+import semicolon.africa.devOpsAss.dtos.response.LoginUserResponse;
 import semicolon.africa.devOpsAss.dtos.response.RegisterUserResponse;
 import semicolon.africa.devOpsAss.model.User;
 import semicolon.africa.devOpsAss.repository.UserRepository;
@@ -41,6 +43,18 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("User with email " + email + " not found");
         }
         return user;
+    }
+
+    @Override
+    public LoginUserResponse login(LoginUserRequest loginUserRequest) {
+        User user = findUserBy(loginUserRequest.getEmail());
+        if (!user.getPassword().equals(loginUserRequest.getPassword())) {
+            throw new RuntimeException("Invalid credentials.");
+        }
+        LoginUserResponse response = new LoginUserResponse();
+        BeanUtils.copyProperties(user, response);
+        response.setMessage("Logged in successfully.");
+        return response;
     }
 
 }
